@@ -103,3 +103,24 @@ def test_endpoint_3_get_compute_job_result_demo_fallback():
     assert "compute_grid_stats" in data
 
 
+def test_endpoint_4_calculate_bond_pricing_custom_rate_shift():
+    """Test Endpoint 4: POST /api/v1/analytics/fixed-income/pricing with custom rate shift parameter"""
+    payload = {
+        "face_value": 1000000.0,
+        "coupon_rate_percent": 5.0,
+        "payment_frequency_per_year": 4,
+        "settlement_date": "2026-08-17",
+        "maturity_date": "2036-08-17",
+        "yield_to_maturity_percent": 4.75,
+        "rate_shift_bps": 100.0
+    }
+    response = client.post("/api/v1/analytics/fixed-income/pricing", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["clean_price"] > 0
+    assert "price_shift_up_50bps" in data["price_sensitivity"]
+    assert "price_shift_down_50bps" in data["price_sensitivity"]
+    assert len(data["cash_flow_schedule"]) > 0
+
+
+
