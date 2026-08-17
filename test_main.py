@@ -89,3 +89,17 @@ def test_endpoint_1_get_bond_yield_curve_with_custom_date_fallback():
     assert "yield_to_maturity_percent" in data
     assert len(data["yield_curve_points"]) > 0
 
+
+def test_endpoint_3_get_compute_job_result_demo_fallback():
+    """Test Endpoint 3: GET /api/v1/analytics/compute-jobs/{job_id} with non-existent job ID fallback"""
+    unknown_job_id = "job-unknown-99999"
+    response = client.get(f"/api/v1/analytics/compute-jobs/{unknown_job_id}")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["job_id"] == unknown_job_id
+    assert data["status"] == "COMPLETED"
+    assert data["portfolio_id"] == "PORT-DEMO-FI"
+    assert "metrics" in data
+    assert "compute_grid_stats" in data
+
+
