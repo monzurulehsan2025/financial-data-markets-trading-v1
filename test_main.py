@@ -75,3 +75,17 @@ def test_endpoint_5_get_health_telemetry():
     assert data["status"] == "HEALTHY"
     assert data["service"] == "fixed-income-analytics-compute-platform"
     assert "cluster_nodes_active" in data
+
+
+def test_endpoint_1_get_bond_yield_curve_with_custom_date_fallback():
+    """Test Endpoint 1: GET /api/v1/analytics/fixed-income/bonds/{isin}/yield-curve with custom as_of_date query parameter"""
+    test_isin = "US999999X999"
+    custom_date = "2026-09-01"
+    response = client.get(f"/api/v1/analytics/fixed-income/bonds/{test_isin}/yield-curve?as_of_date={custom_date}")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["isin"] == test_isin
+    assert data["as_of_date"] == custom_date
+    assert "yield_to_maturity_percent" in data
+    assert len(data["yield_curve_points"]) > 0
+
